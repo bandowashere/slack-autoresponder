@@ -81,7 +81,12 @@ while True:
         channelQuery = "?channel=" + i
         ep = historyConversationsEP + channelQuery
         historyConversationsResponse = requests.get(ep, headers = headers)
-        messages = historyConversationsResponse.json()["messages"]
+
+        #check if there are any messages
+        try:
+            messages = historyConversationsResponse.json()["messages"]
+        except KeyError:
+            continue  # no messages, goto next channel
 
         if messages:
             newestMessageTimestamp = float(messages[0]["ts"])
