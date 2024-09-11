@@ -1,0 +1,37 @@
+{
+    "display_information": {
+        "name": "autoresponder-service",
+        "description": "Simple autoresponder.",
+        "background_color": "#293f3a"
+    },
+    "features": {
+        "bot_user": {
+            "display_name": "autoresponder-service",
+            "always_online": true
+        }
+    },
+    "oauth_config": {
+        "scopes": {
+            "user": [
+                "channels:history",
+                "channels:read",
+                "groups:history",
+                "groups:read",
+                "im:history",
+                "im:read",
+                "mpim:history",
+                "mpim:read",
+                "users:read",
+                "chat:write"
+            ],
+            "bot": [
+                "users:read"
+            ]
+        }
+    },
+    "settings": {
+        "org_deploy_enabled": false,
+        "socket_mode_enabled": false,
+        "token_rotation_enabled": false
+    }
+}
