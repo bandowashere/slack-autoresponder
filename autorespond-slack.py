@@ -1,10 +1,9 @@
 ################################################################################
 # Slack Autoresponder                                                          #
-# v. 20240910                                                                  #
-# @bandowashere                                                                #
+# v. 20240911                                                                  #
 #                                                                              #
 # MIT License                                                                  #
-# Copyright (c) 2024 Kevin Southwick                                           #
+# Copyright (c) 2024 /bandowashere                                             #
 #                                                                              #
 # Permission is hereby granted, free of charge, to any person obtaining a copy #
 # of this software and associated documentation files (the "Software"), to     #
@@ -38,16 +37,9 @@ autoresponse = ""  # populate with your auto response. MUST be URL encoded (urle
 
 
 
-# initialize Slack endpoints
-authTestEP = "https://slack.com/api/auth.test"  # authentication endpoint
-listConversationsEP = "https://slack.com/api/conversations.list?types=im"  # endpoint for user's DMs
-historyConversationsEP = "https://slack.com/api/conversations.history"  # conversations endpoint
-postMessageEP = "https://slack.com/api/chat.postMessage"  # endpoint to post a message
-
-
-
-#check auth
+#check authentication
 print()
+authTestEP = "https://slack.com/api/auth.test"  # authentication endpoint
 authTestResponse = requests.get(authTestEP, headers = headers)
 if authTestResponse.status_code == 200:
     result = authTestResponse.json()
@@ -68,7 +60,10 @@ print()
 
 
 
-# check for new messages every 60 seconds
+# initialize endpoints and check for new messages every 60 seconds
+listConversationsEP = "https://slack.com/api/conversations.list?types=im"  # endpoint for user's DMs
+historyConversationsEP = "https://slack.com/api/conversations.history"  # conversations endpoint
+postMessageEP = "https://slack.com/api/chat.postMessage"  # endpoint to post a message
 while True:
     noMessageSent = True
     dmIDList = []
@@ -79,32 +74,27 @@ while True:
     for i in listConversationsResponse.json()["channels"]:
         updated = float(i["updated"]) / 1000
         id = i["id"]
-        user = i["user"]
-        if currentTime - updated <= 86400:
-            dmIDList.append((id, updated, user))
+        dmIDList.append(id)
 
-    # check for any new DMs (messages) in the last minute
+    # pull conversation history and send message
     for i in dmIDList:
-        channel = i[0]
-        channelQuery = "?channel=" + channel
+        channelQuery = "?channel=" + i
         ep = historyConversationsEP + channelQuery
         historyConversationsResponse = requests.get(ep, headers = headers)
         messages = historyConversationsResponse.json()["messages"]
 
         if messages:
-            for j in messages:
-                ts = float(j["ts"])  # timestamp in Unix time
-                user = j["user"]
-                
-                # check in the last 60 seconds and make sure the user isn't the autoresponder
-                if currentTime - ts <= 60 and authTestResponse.json()["user_id"] != user:
+            newestMessageTimestamp = float(messages[0]["ts"])
+            newestMessageUser = messages[0]["user"]
 
-                    # send autoresponse
-                    postQuery = "?channel=" + channel + "&text=" + autoresponse 
-                    ep = postMessageEP + postQuery
-                    postMessageResponse = requests.get(ep, headers = headers)
-                    noMessageSent = False
-                    break  # only need to send one message per channel
+            # check if the latest message was less than 60 seconds old and make
+            # sure the user isn't the autoresponder
+            if currentTime - newestMessageTimestamp <= 60 and authTestResponse.json()["user_id"] != newestMessageUser:
+                # send autoresponse
+                postQuery = "?channel=" + i + "&text=" + autoresponse 
+                ep = postMessageEP + postQuery
+                postMessageResponse = requests.get(ep, headers = headers)
+                noMessageSent = False
     
     # output
     if noMessageSent:
