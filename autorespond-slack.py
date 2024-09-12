@@ -27,6 +27,7 @@
 # import dependencies
 import requests
 import time
+from datetime import datetime
 
 
   
@@ -54,7 +55,7 @@ if authTestResponse.status_code == 200:
         print(f"Error: {result.get("error")}")
         print()
         exit()
-        
+
 else:
     print(f"Request failed with status code: {authTestResponse.status_code}")
     print()
@@ -71,7 +72,7 @@ while True:
     noMessageSent = True
     dmIDList = []
     currentTime = time.time()  # already in Unix time
-    timestamp = time.gmtime(currentTime)
+    timestamp = datetime.now()
     output = ''
 
     # get user's latest DMs
