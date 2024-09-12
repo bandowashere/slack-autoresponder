@@ -1,6 +1,6 @@
 # slack-autoresponder
 
-A simple autoresponder for Slack that checks for new messages every minute and responds to the source user. Run autorespond-slack.py after the prerequisites are met and the autoresponder-service manifest has been imported.
+A simple autoresponder for Slack that checks for new messages every minute and responds to the source user for any new message. Run autorespond-slack.py after the prerequisites are met and the autoresponder-service manifest has been imported. This app is meant to run on any Slack tier; including free.
 
 ## Prerequisites
 
