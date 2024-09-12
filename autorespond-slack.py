@@ -124,6 +124,7 @@ while True:
 
     else:
         print(f"{timestamp} - Autoresponses sent.")
+        output = f"{timestamp} - Autoresponses sent."
         print()
 
     with open("slack-autoresponder-log.txt", "a") as f:
