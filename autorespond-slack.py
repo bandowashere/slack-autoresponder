@@ -43,15 +43,18 @@ authTestEP = "https://slack.com/api/auth.test"  # authentication endpoint
 authTestResponse = requests.get(authTestEP, headers = headers)
 if authTestResponse.status_code == 200:
     result = authTestResponse.json()
+
     if result.get("ok"):
         print("Authentication successful.")
         print(f"User ID: {result["user_id"]}")
         print(f"User Name: {result["user"]}")
+
     else:
         print("Authentication failed.")
         print(f"Error: {result.get("error")}")
         print()
         exit()
+        
 else:
     print(f"Request failed with status code: {authTestResponse.status_code}")
     print()
