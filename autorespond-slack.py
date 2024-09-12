@@ -108,12 +108,10 @@ while True:
 
         except KeyError as e:
             print(f"{timestamp} - {e}: No messages?\n")
-            output = f"{timestamp} - {e}: No messages?\n"
             continue  # no messages?
 
         except requests.exceptions.JSONDecodeError as e:
             print(f"{timestamp} - Failed to decode JSON: {e}\n")
-            output = f"{timestamp} - Failed to decode JSON: {e}\n"
             continue 
 
     # output
