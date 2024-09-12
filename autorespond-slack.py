@@ -1,6 +1,6 @@
 ################################################################################
 # Slack Autoresponder                                                          #
-# v. 20240911                                                                  #
+# v. 20240912                                                                  #
 #                                                                              #
 # MIT License                                                                  #
 # Copyright (c) 2024 /bandowashere                                             #
@@ -68,6 +68,8 @@ while True:
     noMessageSent = True
     dmIDList = []
     currentTime = time.time()  # already in Unix time
+    timestamp = time.gmtime(currentTime)
+    output = ''
 
     # get user's latest DMs
     listConversationsResponse = requests.get(listConversationsEP, headers = headers)
@@ -85,29 +87,43 @@ while True:
         #check if there are any messages
         try:
             messages = historyConversationsResponse.json()["messages"]
-        except KeyError:
-            continue  # no messages, goto next channel
 
-        if messages:
-            newestMessageTimestamp = float(messages[0]["ts"])
-            newestMessageUser = messages[0]["user"]
 
-            # check if the latest message was less than 60 seconds old and make
-            # sure the user isn't the autoresponder
-            if currentTime - newestMessageTimestamp <= 60 and authTestResponse.json()["user_id"] != newestMessageUser:
-                # send autoresponse
-                postQuery = "?channel=" + i + "&text=" + autoresponse 
-                ep = postMessageEP + postQuery
-                postMessageResponse = requests.get(ep, headers = headers)
-                noMessageSent = False
-    
+            if messages:
+                newestMessageTimestamp = float(messages[0]["ts"])
+                newestMessageUser = messages[0]["user"]
+
+                # check if the latest message was less than 60 seconds old and make
+                # sure the user isn't the autoresponder
+                if currentTime - newestMessageTimestamp <= 60 and authTestResponse.json()["user_id"] != newestMessageUser:
+                    # send autoresponse
+                    postQuery = "?channel=" + i + "&text=" + autoresponse 
+                    ep = postMessageEP + postQuery
+                    postMessageResponse = requests.get(ep, headers = headers)
+                    noMessageSent = False
+
+        except KeyError as e:
+            print(f"{timestamp} - {e}: No messages?\n")
+            output = f"{timestamp} - {e}: No messages?\n"
+            continue  # no messages?
+
+        except requests.exceptions.JSONDecodeError as e:
+            print(f"{timestamp} - Failed to decode JSON: {e}\n")
+            output = f"{timestamp} - Failed to decode JSON: {e}\n"
+            continue 
+
     # output
     if noMessageSent:
-        print("No autoresponses sent in the last 60 seconds.")
+        print(f"{timestamp} - No autoresponses.")
+        output = f"{timestamp} - No autoresponses."
         print()
+
     else:
-        print("Autoresponses were sent in the last 60 seconds.")
+        print(f"{timestamp} - Autoresponses sent.")
         print()
+
+    with open("slack-autoresponder-log.txt", "a") as f:
+        f.write(output)
 
     # repeat every 60 seconds    
     time.sleep(60)
