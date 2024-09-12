@@ -128,7 +128,7 @@ while True:
         print()
 
     with open("slack-autoresponder-log.txt", "a") as f:
-        f.write(output)
+        f.write(output + '\n')
 
     # repeat every 60 seconds    
     time.sleep(60)
