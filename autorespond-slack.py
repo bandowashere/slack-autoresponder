@@ -1,10 +1,10 @@
-################################################################################
-# Slack Autoresponder                                                          #
-# v. 20240912                                                                  #
-#                                                                              #
-# MIT License                                                                  #
-# Copyright (c) 2024 /bandowashere                                             #
-################################################################################
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# Slack Autoresponder                                                         #
+# v. 20241002                                                                 #
+#                                                                             #
+# MIT License                                                                 #
+# Copyright (c) 2024 /bandowashere                                            #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 
 
@@ -22,7 +22,7 @@ autoresponse = ""  # populate with your auto response. MUST be URL encoded (urle
 
 
 
-#check authentication
+# check authentication
 print()
 authTestEP = "https://slack.com/api/auth.test"  # authentication endpoint
 authTestResponse = requests.get(authTestEP, headers = headers)
@@ -72,7 +72,7 @@ while True:
         ep = historyConversationsEP + channelQuery
         historyConversationsResponse = requests.get(ep, headers = headers)
 
-        #check if there are any messages
+        # check if there are any messages
         try:
             messages = historyConversationsResponse.json()["messages"]
 
